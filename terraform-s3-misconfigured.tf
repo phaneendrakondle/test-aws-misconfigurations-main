@@ -29,7 +29,7 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# FIXED: Public access block enabled (blocks public write access and public ACLs)
+# FIXED: Public access block enabled (blocks all public access including ACLs, policies, and bucket-level restrictions)
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
