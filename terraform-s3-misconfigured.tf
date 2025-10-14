@@ -29,21 +29,22 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# MISCONFIGURATION 1: Public access block disabled (allows public access)
+# FIXED: Public access block fully enabled to prevent any public access
+# This is the most secure configuration and ensures no public write access
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-# MISCONFIGURATION 2: Public read/write ACL
+# FIXED: ACL changed from public-read-write to private
 resource "aws_s3_bucket_acl" "misconfigured_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
   bucket     = aws_s3_bucket.misconfigured_bucket.id
-  acl        = "public-read-write"
+  acl        = "private"
 }
 
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
@@ -67,31 +68,9 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # MISCONFIGURATION 5: No access logging
 # (Logging is intentionally not configured)
 
-# MISCONFIGURATION 6: Public bucket policy allowing full access
-resource "aws_s3_bucket_policy" "misconfigured_policy" {
-  bucket = aws_s3_bucket.misconfigured_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid       = "PublicReadWrite"
-        Effect    = "Allow"
-        Principal = "*"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          aws_s3_bucket.misconfigured_bucket.arn,
-          "${aws_s3_bucket.misconfigured_bucket.arn}/*",
-        ]
-      },
-    ]
-  })
-}
+# FIXED: Bucket policy removed to comply with block_public_policy = true setting
+# The block_public_policy setting prevents any public bucket policies from being applied
+# If public read access is needed, use CloudFront, pre-signed URLs, or VPC endpoints instead
 
 # Output the bucket name and URL
 output "bucket_name" {
@@ -103,5 +82,5 @@ output "bucket_domain_name" {
 }
 
 output "security_warnings" {
-  value = "WARNING: This bucket is intentionally misconfigured with public access, no encryption, and no versioning!"
+  value = "WARNING: This bucket still has some misconfigurations (no encryption, no versioning), but ALL public access (including write) has been blocked!"
 }
