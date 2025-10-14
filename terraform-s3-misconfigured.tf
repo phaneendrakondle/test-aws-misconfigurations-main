@@ -29,17 +29,15 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# FIXED: Public access block configured to prevent public write access
-# block_public_acls blocks new public ACLs (including write ACLs)
-# ignore_public_acls ignores existing public ACLs
-# block_public_policy and restrict_public_buckets are false to allow controlled public read via policy
+# FIXED: Public access block fully enabled to prevent any public access
+# This is the most secure configuration and ensures no public write access
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
   block_public_acls       = true
-  block_public_policy     = false
+  block_public_policy     = true
   ignore_public_acls      = true
-  restrict_public_buckets = false
+  restrict_public_buckets = true
 }
 
 # FIXED: ACL changed from public-read-write to private
@@ -70,7 +68,10 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # MISCONFIGURATION 5: No access logging
 # (Logging is intentionally not configured)
 
-# FIXED: Removed public write permissions (PutObject, DeleteObject) from policy
+# FIXED: Bucket policy removed to comply with block_public_policy = true
+# The public access block settings above will prevent this policy from being applied
+# If public read access is needed, use CloudFront, pre-signed URLs, or VPC endpoints instead
+/*
 resource "aws_s3_bucket_policy" "misconfigured_policy" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
@@ -93,6 +94,7 @@ resource "aws_s3_bucket_policy" "misconfigured_policy" {
     ]
   })
 }
+*/
 
 # Output the bucket name and URL
 output "bucket_name" {
@@ -104,5 +106,5 @@ output "bucket_domain_name" {
 }
 
 output "security_warnings" {
-  value = "WARNING: This bucket still has some misconfigurations (no encryption, no versioning), but public write access has been blocked!"
+  value = "WARNING: This bucket still has some misconfigurations (no encryption, no versioning), but ALL public access (including write) has been blocked!"
 }
