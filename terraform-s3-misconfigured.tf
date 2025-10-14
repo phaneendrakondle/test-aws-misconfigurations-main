@@ -68,8 +68,8 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # MISCONFIGURATION 5: No access logging
 # (Logging is intentionally not configured)
 
-# FIXED: Bucket policy removed to comply with block_public_policy = true
-# The public access block settings above prevent any public bucket policies from being applied
+# FIXED: Bucket policy removed to comply with block_public_policy = true setting
+# The block_public_policy setting prevents any public bucket policies from being applied
 # If public read access is needed, use CloudFront, pre-signed URLs, or VPC endpoints instead
 
 # Output the bucket name and URL
