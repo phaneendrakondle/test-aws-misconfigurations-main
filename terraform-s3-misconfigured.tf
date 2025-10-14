@@ -69,32 +69,8 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # (Logging is intentionally not configured)
 
 # FIXED: Bucket policy removed to comply with block_public_policy = true
-# The public access block settings above will prevent this policy from being applied
+# The public access block settings above prevent any public bucket policies from being applied
 # If public read access is needed, use CloudFront, pre-signed URLs, or VPC endpoints instead
-/*
-resource "aws_s3_bucket_policy" "misconfigured_policy" {
-  bucket = aws_s3_bucket.misconfigured_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid       = "PublicReadOnly"
-        Effect    = "Allow"
-        Principal = "*"
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          aws_s3_bucket.misconfigured_bucket.arn,
-          "${aws_s3_bucket.misconfigured_bucket.arn}/*",
-        ]
-      },
-    ]
-  })
-}
-*/
 
 # Output the bucket name and URL
 output "bucket_name" {
