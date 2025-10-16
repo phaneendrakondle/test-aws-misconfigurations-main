@@ -2,6 +2,15 @@
 
 This repository contains intentionally misconfigured AWS infrastructure files designed for security testing, penetration testing, and educational purposes. **DO NOT USE THESE CONFIGURATIONS IN PRODUCTION ENVIRONMENTS.**
 
+## Technologies
+
+This repository uses:
+- **Terraform** - Infrastructure as Code
+- **AWS CloudFormation** - AWS native IaC templates
+- **Bash** - Deployment automation scripts
+
+This repository does NOT contain any Ruby, Rails, Node.js, or other web application code. See [SECURITY.md](SECURITY.md) for more details on the security scope of this repository.
+
 ## Files Included
 
 ### Terraform Files
@@ -119,6 +128,12 @@ aws cloudformation delete-stack --stack-name misconfigured-ec2-stack
 ## Contributing
 
 If you find additional misconfigurations that should be included or improvements to existing ones, please feel free to contribute via pull requests.
+
+## Security
+
+For information about the security scope of this repository and reporting security issues, please see [SECURITY.md](SECURITY.md).
+
+**Note**: This repository is for AWS infrastructure testing only and does not contain Ruby on Rails or other web application code.
 
 ## License
 
