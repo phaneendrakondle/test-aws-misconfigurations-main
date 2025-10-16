@@ -17,8 +17,10 @@ show_help() {
     echo "Commands:"
     echo "  terraform-deploy-s3     Deploy misconfigured S3 bucket using Terraform"
     echo "  terraform-deploy-ec2    Deploy misconfigured EC2 instance using Terraform"
+    echo "  terraform-deploy-tomcat Deploy Apache Tomcat with CVE-2025-24813 mitigation"
     echo "  terraform-destroy-s3    Destroy S3 Terraform resources"
     echo "  terraform-destroy-ec2   Destroy EC2 Terraform resources"
+    echo "  terraform-destroy-tomcat Destroy Tomcat Terraform resources"
     echo "  cf-deploy-s3           Deploy misconfigured S3 bucket using CloudFormation"
     echo "  cf-deploy-ec2          Deploy misconfigured EC2 instance using CloudFormation"
     echo "  cf-destroy-s3          Destroy S3 CloudFormation stack"
@@ -116,6 +118,48 @@ terraform_destroy_ec2() {
     fi
 }
 
+terraform_deploy_tomcat() {
+    echo "🚀 Deploying Apache Tomcat server with CVE-2025-24813 mitigation..."
+    if ! command -v terraform &> /dev/null; then
+        echo "❌ Terraform is required but not installed."
+        exit 1
+    fi
+    
+    mkdir -p terraform-tomcat-work
+    cp terraform-tomcat-misconfigured.tf terraform-tomcat-work/
+    cd terraform-tomcat-work
+    terraform init
+    terraform plan
+    echo ""
+    echo "⚠️  WARNING: This will create an Apache Tomcat server on EC2!"
+    echo "⚠️  The server demonstrates CVE-2025-24813 mitigation with Tomcat 10.1.35"
+    read -p "Are you sure you want to continue? (yes/no): " confirm
+    if [[ $confirm == "yes" ]]; then
+        terraform apply -auto-approve
+        echo ""
+        echo "✅ Apache Tomcat server deployed!"
+        echo "📝 Wait 3-5 minutes for initialization, then access the security status page"
+        echo "🔒 CVE-2025-24813 Status: MITIGATED (Tomcat 10.1.35 with secure configuration)"
+        echo "⚠️  Remember to destroy the resources when done!"
+    else
+        echo "Deployment cancelled."
+    fi
+    cd ..
+}
+
+terraform_destroy_tomcat() {
+    echo "🗑️  Destroying Tomcat Terraform resources..."
+    if [[ -d "terraform-tomcat-work" ]]; then
+        cd terraform-tomcat-work
+        terraform destroy -auto-approve
+        cd ..
+        rm -rf terraform-tomcat-work
+        echo "✅ Tomcat resources destroyed."
+    else
+        echo "No Tomcat Terraform resources found to destroy."
+    fi
+}
+
 cf_deploy_s3() {
     echo "🚀 Deploying misconfigured S3 bucket with CloudFormation..."
     echo ""
@@ -171,6 +215,10 @@ case "${1:-help}" in
         check_requirements
         terraform_deploy_ec2
         ;;
+    terraform-deploy-tomcat)
+        check_requirements
+        terraform_deploy_tomcat
+        ;;
     terraform-destroy-s3)
         check_requirements
         terraform_destroy_s3
@@ -178,6 +226,10 @@ case "${1:-help}" in
     terraform-destroy-ec2)
         check_requirements
         terraform_destroy_ec2
+        ;;
+    terraform-destroy-tomcat)
+        check_requirements
+        terraform_destroy_tomcat
         ;;
     cf-deploy-s3)
         check_requirements

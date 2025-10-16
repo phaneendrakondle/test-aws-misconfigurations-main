@@ -7,6 +7,7 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 ### Terraform Files
 1. **terraform-s3-misconfigured.tf** - Misconfigured S3 bucket with public access
 2. **terraform-ec2-misconfigured.tf** - Misconfigured EC2 instance with multiple security vulnerabilities
+3. **terraform-tomcat-misconfigured.tf** - Apache Tomcat deployment demonstrating CVE-2025-24813 vulnerability and mitigation
 
 ### CloudFormation Files
 1. **cloudformation-s3-misconfigured.yaml** - Misconfigured S3 bucket using CloudFormation
@@ -38,6 +39,15 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ Sudo access without password requirements
 - ❌ Sensitive information exposed via web interface
 
+### Apache Tomcat Vulnerability (CVE-2025-24813)
+- ✅ Demonstrates critical Apache Tomcat vulnerability
+- ✅ Shows proper mitigation using secure version (10.1.35)
+- ✅ Default servlet writes disabled (readonly=true)
+- ✅ Directory listings disabled
+- ✅ Configuration review for partial PUT support
+- **CVSS Score:** 9.8 (CRITICAL)
+- **Risk:** Remote Code Execution, Information Disclosure, Malicious Content Injection
+
 ## Usage
 
 ### Prerequisites
@@ -56,6 +66,11 @@ terraform apply -var-file="terraform-s3-misconfigured.tf"
 terraform init
 terraform plan -var-file="terraform-ec2-misconfigured.tf"
 terraform apply -var-file="terraform-ec2-misconfigured.tf"
+
+# For Apache Tomcat with CVE-2025-24813 demonstration
+terraform init
+terraform plan -var-file="terraform-tomcat-misconfigured.tf"
+terraform apply -var-file="terraform-tomcat-misconfigured.tf"
 ```
 
 ### CloudFormation Deployment
@@ -102,6 +117,49 @@ These misconfigurations can be detected by various security scanning tools:
 - Infrastructure security scanning
 - DevSecOps pipeline testing
 - Compliance testing
+
+## CVE-2025-24813 - Apache Tomcat Critical Vulnerability
+
+### Overview
+This repository includes a demonstration of CVE-2025-24813, a critical vulnerability in Apache Tomcat with a CVSS score of 9.8.
+
+### Affected Versions
+- Apache Tomcat 11.0.0-M1 through 11.0.2
+- Apache Tomcat 10.1.0-M1 through 10.1.34
+- Apache Tomcat 9.0.0.M1 through 9.0.98
+- Apache Tomcat 8.5.0 through 8.5.100 (End of Life)
+
+### Vulnerability Details
+The vulnerability allows for potential:
+- **Remote Code Execution (RCE)**
+- **Information Disclosure**
+- **Malicious Content Injection**
+
+Under specific conditions:
+1. Writes enabled for the default servlet (disabled by default)
+2. Support for partial PUT (enabled by default)
+3. Security-sensitive files uploaded via partial PUT
+4. Application using Tomcat's file-based session persistence with default storage location
+5. Application includes a library vulnerable to deserialization attacks
+
+### Mitigation (Implemented in terraform-tomcat-misconfigured.tf)
+✅ **Upgraded to Apache Tomcat 10.1.35** (patched version)
+✅ **Default servlet writes DISABLED** (readonly=true)
+✅ **Directory listings DISABLED**
+✅ **Partial PUT support reviewed** (not exploitable with writes disabled)
+
+### Secure Versions
+- Apache Tomcat **11.0.3** or later
+- Apache Tomcat **10.1.35** or later
+- Apache Tomcat **9.0.99** or later
+
+### Testing the Deployment
+After deploying the Tomcat instance:
+1. Access the Tomcat server at `http://<public-ip>:8080`
+2. Review the security status page showing:
+   - Current Tomcat version
+   - CVE-2025-24813 mitigation status
+   - Security configuration details
 
 ## Cleanup
 
