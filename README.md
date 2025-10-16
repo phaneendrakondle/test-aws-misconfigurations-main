@@ -25,7 +25,7 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ No CloudTrail monitoring
 
 ### EC2 Instance Misconfigurations
-- ❌ Security groups allowing access from 0.0.0.0/0 on multiple ports (SSH, RDP, HTTP, HTTPS, databases)
+- ❌ Security groups allowing access from 0.0.0.0/0 on multiple ports (SSH, RDP, HTTP, HTTPS, databases, Tomcat)
 - ❌ IAM roles with excessive permissions (PowerUserAccess, IAMFullAccess)
 - ❌ Hardcoded credentials in user data
 - ❌ Unencrypted EBS volumes
@@ -37,6 +37,7 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ Firewall disabled
 - ❌ Sudo access without password requirements
 - ❌ Sensitive information exposed via web interface
+- ✅ Apache Tomcat 9.0.99 installed (patched for CVE-2025-24813)
 
 ## Usage
 
@@ -71,6 +72,19 @@ aws cloudformation create-stack \
   --template-body file://cloudformation-ec2-misconfigured.yaml \
   --capabilities CAPABILITY_NAMED_IAM
 ```
+
+## Known Vulnerabilities Addressed
+
+### Apache Tomcat CVE-2025-24813
+- **Severity:** CRITICAL (CVSS 7.5)
+- **Affected Versions:** 
+  - 11.0.0-M1 through 11.0.2
+  - 10.1.0-M1 through 10.1.34
+  - 9.0.0.M1 through 9.0.98
+  - 8.5.0 through 8.5.100 (EOL)
+- **Fixed Version Installed:** 9.0.99
+- **Vulnerability:** Path equivalence issues allowing potential RCE, information disclosure, and malicious content injection
+- **Mitigation:** Upgraded to secure Tomcat version 9.0.99 (alternatives: 11.0.3, 10.1.35)
 
 ## Security Testing Tools
 
