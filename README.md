@@ -120,6 +120,19 @@ aws cloudformation delete-stack --stack-name misconfigured-ec2-stack
 
 If you find additional misconfigurations that should be included or improvements to existing ones, please feel free to contribute via pull requests.
 
+## Security Fixes
+
+This repository includes demonstrations of security vulnerability fixes:
+
+### CVE-2016-0752: Action View Directory Traversal (FIXED)
+- **Severity:** HIGH (CVSS 7.5)
+- **Status:** ✅ RESOLVED
+- **Fix:** Updated Action View to version 5.2.8.1
+- **Documentation:** See [SECURITY-FIXES.md](SECURITY-FIXES.md) for details
+- **Verification:** Run `./verify-security-fix.sh` to verify the fix
+
+The vulnerable Action View versions (before 3.2.22.1, 4.0.x-4.1.x before 4.1.14.1, 4.2.x before 4.2.5.1) have been updated to a secure version (5.2.8.1) to prevent directory traversal attacks.
+
 ## License
 
 This repository is for educational and testing purposes only. Use at your own risk.
