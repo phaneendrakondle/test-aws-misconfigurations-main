@@ -9,8 +9,13 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 2. **terraform-ec2-misconfigured.tf** - Misconfigured EC2 instance with multiple security vulnerabilities
 
 ### CloudFormation Files
-1. **cloudformation-s3-misconfigured.yaml** - Misconfigured S3 bucket using CloudFormation
-2. **cloudformation-ec2-misconfigured.yaml** - Misconfigured EC2 instance using CloudFormation
+1. **cloudformation-sg-misconfig.yaml** - Misconfigured security group using CloudFormation
+2. **cloudformation-rds-misconfig.yaml** - Misconfigured RDS instance using CloudFormation
+
+### Application Security Vulnerabilities
+1. **rails-directory-traversal-cve-2016-0752.rb** - CVE-2016-0752: Directory traversal vulnerability in Ruby on Rails Action View
+2. **CVE-2016-0752-DOCUMENTATION.md** - Comprehensive documentation on the vulnerability, exploitation, and mitigation
+3. **rails-directory-traversal-cve-2016-0752_spec.rb** - Test suite for validating the security fix
 
 ## Security Misconfigurations Included
 
@@ -37,6 +42,17 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ Firewall disabled
 - ❌ Sudo access without password requirements
 - ❌ Sensitive information exposed via web interface
+
+### Application Security Vulnerabilities
+#### CVE-2016-0752: Directory Traversal in Action View
+- ❌ **Severity**: HIGH (CVSS 7.5)
+- ❌ **Type**: Path Traversal / Directory Traversal
+- ❌ **Impact**: Allows attackers to read arbitrary files on the server
+- ❌ **Vulnerable Pattern**: Using `render` method with unsanitized user input
+- ❌ **Attack Vector**: `../../../etc/passwd` in URL parameters
+- ✅ **Mitigation**: Input validation, whitelist approach, path sanitization
+- 📚 **Documentation**: See `CVE-2016-0752-DOCUMENTATION.md` for detailed information
+- 🧪 **Tests**: Run `rails-directory-traversal-cve-2016-0752_spec.rb` to validate the fix
 
 ## Usage
 
@@ -85,6 +101,25 @@ These misconfigurations can be detected by various security scanning tools:
 - **Terrascan**
 - **tfsec**
 
+### Application Security Testing Tools
+For testing the Rails directory traversal vulnerability (CVE-2016-0752):
+- **Brakeman** - Static analysis security scanner for Rails applications
+- **bundler-audit** - Checks for vulnerable versions of gems
+- **OWASP ZAP** - Web application security scanner
+- **Burp Suite** - Web vulnerability scanner
+- **RSpec** - Run the included test suite to validate fixes
+
+```bash
+# Install Brakeman
+gem install brakeman
+
+# Scan for security vulnerabilities
+brakeman -A -q
+
+# Run the test suite
+rspec rails-directory-traversal-cve-2016-0752_spec.rb
+```
+
 ## ⚠️ Important Warnings
 
 1. **DO NOT deploy these in production environments**
@@ -102,6 +137,10 @@ These misconfigurations can be detected by various security scanning tools:
 - Infrastructure security scanning
 - DevSecOps pipeline testing
 - Compliance testing
+- Application security testing (OWASP Top 10)
+- Web application vulnerability assessment
+- Secure coding practices training
+- CVE research and mitigation strategies
 
 ## Cleanup
 
