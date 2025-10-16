@@ -6,7 +6,13 @@
 #
 # This vulnerability allows remote attackers to read arbitrary files
 # by exploiting an application's unrestricted use of the render method
+#
+# NOTE: The security issues detected by CodeQL in this file are INTENTIONAL
+# and exist for educational/demonstration purposes only. This file shows
+# both vulnerable code (to demonstrate CVE-2016-0752) and secure alternatives.
 
+# codeql[rb/csrf-protection-not-enabled]: INTENTIONAL - This is a vulnerable example for demonstration
+# codeql[rb/path-injection]: INTENTIONAL - This demonstrates the CVE-2016-0752 vulnerability
 class VulnerableController < ApplicationController
   # VULNERABILITY 1: Direct use of user input in render method
   # An attacker could exploit this by passing: template=../../../../etc/passwd
@@ -55,6 +61,7 @@ end
 
 # SECURE ALTERNATIVES - How to fix these vulnerabilities:
 
+# This controller demonstrates secure coding practices that mitigate CVE-2016-0752
 class SecureController < ApplicationController
   # FIX 1: Use a whitelist of allowed templates
   ALLOWED_TEMPLATES = {

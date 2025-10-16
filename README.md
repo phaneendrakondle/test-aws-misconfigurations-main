@@ -136,6 +136,7 @@ These misconfigurations can be detected by various security scanning tools:
 4. **EC2 instances with weak security groups are vulnerable to attacks**
 5. **Always destroy resources after testing**: `terraform destroy` or `aws cloudformation delete-stack`
 6. **Monitor your AWS bill and usage during testing**
+7. **This repository contains intentional vulnerabilities** - See [SECURITY-NOTICE.md](SECURITY-NOTICE.md) for details
 
 ## Educational Use Cases
 
