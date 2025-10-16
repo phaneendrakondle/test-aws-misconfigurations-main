@@ -1,0 +1,59 @@
+# Apache Tomcat Configuration
+# This configuration file demonstrates secure Apache Tomcat deployment
+# addressing CVE-2025-24813 vulnerability
+
+apiVersion: v1
+kind: Config
+metadata:
+  name: tomcat-deployment-config
+  description: Secure Apache Tomcat deployment configuration
+
+tomcat:
+  # SECURE VERSION: Using patched version to mitigate CVE-2025-24813
+  # This vulnerability affects:
+  # - 11.0.0-M1 through 11.0.2 (upgrade to 11.0.3+)
+  # - 10.1.0-M1 through 10.1.34 (upgrade to 10.1.35+)
+  # - 9.0.0.M1 through 9.0.98 (upgrade to 9.0.99+)
+  # - 8.5.0 through 8.5.100 (EOL, upgrade to supported version)
+  version: "9.0.99"
+  
+  distribution:
+    type: "apache-tomcat"
+    downloadUrl: "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.99/bin/apache-tomcat-9.0.99.tar.gz"
+  
+  security:
+    # CVE-2025-24813 Mitigation Settings
+    cve_2025_24813:
+      status: "PATCHED"
+      description: "Path equivalence issues in file.Name (Internal Dot) handling"
+      mitigation: "Upgraded to version 9.0.99 which contains the fix"
+      
+    # Additional security hardening
+    defaultServlet:
+      readonly: true  # Disable writes for default servlet
+      listings: false
+      
+    partialPut:
+      enabled: false  # Disable partial PUT support
+      
+    sessionPersistence:
+      fileBasedStorage: false  # Use alternative session storage
+      
+  installation:
+    path: "/opt/tomcat"
+    user: "tomcat"
+    group: "tomcat"
+    
+  ports:
+    http: 8080
+    https: 8443
+    shutdown: 8005
+    ajp: 8009
+    
+  jvm:
+    minMemory: "512M"
+    maxMemory: "1024M"
+    
+  logging:
+    level: "INFO"
+    accessLog: true

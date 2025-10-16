@@ -9,8 +9,12 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 2. **terraform-ec2-misconfigured.tf** - Misconfigured EC2 instance with multiple security vulnerabilities
 
 ### CloudFormation Files
-1. **cloudformation-s3-misconfigured.yaml** - Misconfigured S3 bucket using CloudFormation
-2. **cloudformation-ec2-misconfigured.yaml** - Misconfigured EC2 instance using CloudFormation
+1. **cloudformation-rds-misconfig.yaml** - Misconfigured RDS database using CloudFormation
+2. **cloudformation-sg-misconfig.yaml** - Misconfigured Security Group using CloudFormation
+
+### Secure Configuration Examples (src/)
+1. **src/tomcat-config.yaml** - Secure Apache Tomcat configuration (CVE-2025-24813 patched)
+2. **src/cloudformation-tomcat-secure.yaml** - Secure Tomcat deployment template
 
 ## Security Misconfigurations Included
 
@@ -25,7 +29,7 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ No CloudTrail monitoring
 
 ### EC2 Instance Misconfigurations
-- ❌ Security groups allowing access from 0.0.0.0/0 on multiple ports (SSH, RDP, HTTP, HTTPS, databases)
+- ❌ Security groups allowing access from 0.0.0.0/0 on multiple ports (SSH, RDP, HTTP, HTTPS, databases, Tomcat)
 - ❌ IAM roles with excessive permissions (PowerUserAccess, IAMFullAccess)
 - ❌ Hardcoded credentials in user data
 - ❌ Unencrypted EBS volumes
@@ -37,6 +41,7 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ Firewall disabled
 - ❌ Sudo access without password requirements
 - ❌ Sensitive information exposed via web interface
+- ✅ Apache Tomcat 9.0.99 (CVE-2025-24813 PATCHED)
 
 ## Usage
 
@@ -71,6 +76,26 @@ aws cloudformation create-stack \
   --template-body file://cloudformation-ec2-misconfigured.yaml \
   --capabilities CAPABILITY_NAMED_IAM
 ```
+
+## Apache Tomcat Security (CVE-2025-24813)
+
+### ✅ Secure Configuration Available
+This repository includes a **patched and secure** Apache Tomcat deployment configuration to mitigate **CVE-2025-24813**:
+
+- **Severity:** CRITICAL (CVSS 7.5)
+- **Vulnerability:** Path equivalence issues in file.Name handling leading to potential RCE
+- **Fixed Version:** Apache Tomcat 9.0.99 (included in this repository)
+
+The EC2 Terraform configuration (`terraform-ec2-misconfigured.tf`) now includes:
+- Tomcat 9.0.99 installation (patched version)
+- Security hardening for CVE-2025-24813
+- Readonly mode enabled for default servlet
+- Partial PUT support disabled
+
+For detailed information, see the `src/` directory which contains:
+- Secure Tomcat configuration files
+- CloudFormation template for secure deployment
+- Documentation on mitigation measures
 
 ## Security Testing Tools
 
