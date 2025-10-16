@@ -58,19 +58,25 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 ### Terraform Deployment
 ```bash
 # For S3 misconfigured bucket
+cd terraform-s3-work
+cp ../terraform-s3-misconfigured.tf .
 terraform init
-terraform plan -var-file="terraform-s3-misconfigured.tf"
-terraform apply -var-file="terraform-s3-misconfigured.tf"
+terraform plan
+terraform apply
 
 # For EC2 misconfigured instance
+cd terraform-ec2-work
+cp ../terraform-ec2-misconfigured.tf .
 terraform init
-terraform plan -var-file="terraform-ec2-misconfigured.tf"
-terraform apply -var-file="terraform-ec2-misconfigured.tf"
+terraform plan
+terraform apply
 
 # For Apache Tomcat with CVE-2025-24813 demonstration
+cd terraform-tomcat-work
+cp ../terraform-tomcat-misconfigured.tf .
 terraform init
-terraform plan -var-file="terraform-tomcat-misconfigured.tf"
-terraform apply -var-file="terraform-tomcat-misconfigured.tf"
+terraform plan
+terraform apply
 ```
 
 ### CloudFormation Deployment
