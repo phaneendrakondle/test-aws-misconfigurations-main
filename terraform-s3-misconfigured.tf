@@ -1,4 +1,4 @@
-# Partially Fixed S3 Bucket - FOR SECURITY TESTING ONLY
+# S3 Bucket - Public Write Access Fixed (S3.3 Control) - FOR SECURITY TESTING ONLY
 # This file previously contained multiple security misconfigurations
 # PUBLIC WRITE ACCESS HAS BEEN FIXED - Block Public Access is now enabled
 # Remaining misconfigurations: no encryption, no versioning, no logging
@@ -83,5 +83,5 @@ output "bucket_domain_name" {
 }
 
 output "security_warnings" {
-  value = "FIXED: Public write access has been blocked. Bucket still has misconfigurations: no encryption and no versioning enabled."
+  value = "FIXED: Public write access has been blocked. Bucket still has misconfigurations: no encryption, no versioning, and no access logging enabled."
 }
