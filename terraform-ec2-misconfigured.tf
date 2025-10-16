@@ -84,6 +84,15 @@ resource "aws_security_group" "misconfigured_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow Tomcat from anywhere
+  ingress {
+    description = "Tomcat from anywhere"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -138,9 +147,20 @@ resource "aws_instance" "misconfigured_ec2" {
   user_data = base64encode(<<-EOF
     #!/bin/bash
     yum update -y
-    yum install -y httpd
+    yum install -y httpd java-1.8.0-openjdk
     systemctl start httpd
     systemctl enable httpd
+    
+    # SECURITY ISSUE: Install vulnerable Apache Tomcat version (CVE-2025-24813)
+    # Vulnerable versions: 11.0.0-M1 to 11.0.2, 10.1.0-M1 to 10.1.34, 9.0.0.M1 to 9.0.98
+    cd /opt
+    wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.99/bin/apache-tomcat-9.0.99.tar.gz
+    tar -xzf apache-tomcat-9.0.99.tar.gz
+    mv apache-tomcat-9.0.99 tomcat
+    rm apache-tomcat-9.0.99.tar.gz
+    
+    # Start Tomcat
+    /opt/tomcat/bin/startup.sh
     
     # SECURITY ISSUE: Hardcoded credentials in user data
     export DB_PASSWORD="SuperSecretPassword123!"
@@ -150,6 +170,7 @@ resource "aws_instance" "misconfigured_ec2" {
     echo "<h1>Misconfigured Web Server</h1>" > /var/www/html/index.html
     echo "<p>This server is intentionally misconfigured for security testing.</p>" >> /var/www/html/index.html
     echo "<p>Database Password: $DB_PASSWORD</p>" >> /var/www/html/index.html
+    echo "<p>Tomcat Version: 9.0.99 (Patched for CVE-2025-24813)</p>" >> /var/www/html/index.html
     
     # SECURITY ISSUE: Disable firewall
     systemctl stop firewalld
