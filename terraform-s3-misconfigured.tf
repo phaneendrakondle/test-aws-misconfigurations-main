@@ -104,5 +104,5 @@ output "bucket_domain_name" {
 }
 
 output "security_warnings" {
-  value = "NOTICE: Public write access has been blocked. Bucket still has no encryption and no versioning."
+  value = "NOTICE: Public read and write access has been blocked. Bucket still has no encryption and no versioning."
 }
