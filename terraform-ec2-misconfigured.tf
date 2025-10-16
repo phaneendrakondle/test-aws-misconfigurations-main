@@ -152,7 +152,7 @@ resource "aws_instance" "misconfigured_ec2" {
     systemctl enable httpd
     
     # Install Apache Tomcat with SECURE version (CVE-2025-24813 patched)
-    # Using version 9.0.99 to mitigate CVE-2025-24813
+    # Using version 9.0.99 which includes the patch for CVE-2025-24813
     TOMCAT_VERSION="9.0.99"
     cd /opt
     wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
@@ -162,15 +162,11 @@ resource "aws_instance" "misconfigured_ec2" {
     chown -R tomcat:tomcat /opt/apache-tomcat-$TOMCAT_VERSION
     chown -h tomcat:tomcat /opt/tomcat
     
-    # Configure Tomcat with secure settings to prevent CVE-2025-24813
-    # Disable partial PUT support and file-based session persistence
-    cat > /opt/tomcat/conf/web.xml.security << 'TOMCATSEC'
-    <!-- Security hardening for CVE-2025-24813 -->
-    <init-param>
-        <param-name>readonly</param-name>
-        <param-value>true</param-value>
-    </init-param>
-    TOMCATSEC
+    # Additional hardening: Explicitly set readonly=true in web.xml for CVE-2025-24813
+    # Note: Version 9.0.99 already includes the fix, but this adds defense-in-depth
+    sed -i '/<servlet-name>default<\/servlet-name>/,/<\/servlet>/ {
+      /<load-on-startup>/i\    <init-param>\n        <param-name>readonly</param-name>\n        <param-value>true</param-value>\n    </init-param>
+    }' /opt/tomcat/conf/web.xml
     
     # SECURITY ISSUE: Hardcoded credentials in user data
     export DB_PASSWORD="SuperSecretPassword123!"
