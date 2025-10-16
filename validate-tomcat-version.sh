@@ -102,11 +102,23 @@ fi
 # Check security hardening measures
 echo "🔒 Checking security hardening measures..."
 
-# Check for readonly parameter
-if grep -q "readonly" terraform-ec2-misconfigured.tf && grep -q "readonly" src/cloudformation-tomcat-secure.yaml; then
-    echo -e "${GREEN}✓ PASS${NC}: Readonly mode configured in Tomcat deployments"
+# Check for readonly parameter set to true in Terraform file
+READONLY_CHECK=0
+if grep -q "param-name>readonly" terraform-ec2-misconfigured.tf && \
+   grep -q "param-value>true" terraform-ec2-misconfigured.tf; then
+    READONLY_CHECK=$((READONLY_CHECK + 1))
+fi
+
+# Check for readonly parameter in CloudFormation file (may use escaped characters)
+if grep -q "readonly" src/cloudformation-tomcat-secure.yaml && \
+   grep -q "true" src/cloudformation-tomcat-secure.yaml; then
+    READONLY_CHECK=$((READONLY_CHECK + 1))
+fi
+
+if [ $READONLY_CHECK -eq 2 ]; then
+    echo -e "${GREEN}✓ PASS${NC}: Readonly mode configured to true in Tomcat deployments"
 else
-    echo -e "${RED}✗ FAIL${NC}: Readonly mode not properly configured"
+    echo -e "${RED}✗ FAIL${NC}: Readonly mode not properly configured to true"
     ERRORS=$((ERRORS + 1))
 fi
 
