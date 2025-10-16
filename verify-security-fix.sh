@@ -32,10 +32,10 @@ echo ""
 # - 4.2.5.1+ for 4.2.x series
 # - 5.0.0.beta1.1+ for 5.x series
 
-# Extract major and minor version
-MAJOR_VERSION=$(echo $ACTIONVIEW_VERSION | cut -d. -f1)
-MINOR_VERSION=$(echo $ACTIONVIEW_VERSION | cut -d. -f2)
-PATCH_VERSION=$(echo $ACTIONVIEW_VERSION | cut -d. -f3)
+# Extract major, minor, and patch version
+MAJOR_VERSION=$(echo "$ACTIONVIEW_VERSION" | cut -d. -f1)
+MINOR_VERSION=$(echo "$ACTIONVIEW_VERSION" | cut -d. -f2)
+PATCH_VERSION=$(echo "$ACTIONVIEW_VERSION" | cut -d. -f3)
 
 echo "Analyzing version components:"
 echo "  Major: $MAJOR_VERSION"
@@ -52,7 +52,7 @@ if [ "$MAJOR_VERSION" -ge 5 ]; then
 elif [ "$MAJOR_VERSION" -eq 4 ]; then
     if [ "$MINOR_VERSION" -eq 2 ]; then
         # Check if 4.2.5.1 or higher
-        if [ "$PATCH_VERSION" -ge 6 ] || ([ "$PATCH_VERSION" -eq 5 ] && echo "$ACTIONVIEW_VERSION" | grep -q "5.1"); then
+        if [ "$PATCH_VERSION" -ge 6 ] || ([ "$PATCH_VERSION" -eq 5 ] && echo "$ACTIONVIEW_VERSION" | grep -q '\.5\.1$'); then
             echo "✅ SECURE: Version 4.2.5.1 or higher"
             SECURE=true
         else
@@ -60,7 +60,7 @@ elif [ "$MAJOR_VERSION" -eq 4 ]; then
         fi
     elif [ "$MINOR_VERSION" -eq 1 ]; then
         # Check if 4.1.14.1 or higher
-        if [ "$PATCH_VERSION" -ge 15 ] || ([ "$PATCH_VERSION" -eq 14 ] && echo "$ACTIONVIEW_VERSION" | grep -q "14.1"); then
+        if [ "$PATCH_VERSION" -ge 15 ] || ([ "$PATCH_VERSION" -eq 14 ] && echo "$ACTIONVIEW_VERSION" | grep -q '\.14\.1$'); then
             echo "✅ SECURE: Version 4.1.14.1 or higher"
             SECURE=true
         else
@@ -71,7 +71,7 @@ elif [ "$MAJOR_VERSION" -eq 4 ]; then
     fi
 elif [ "$MAJOR_VERSION" -eq 3 ]; then
     # Check if 3.2.22.1 or higher
-    if [ "$MINOR_VERSION" -eq 2 ] && [ "$PATCH_VERSION" -ge 23 ] || ([ "$PATCH_VERSION" -eq 22 ] && echo "$ACTIONVIEW_VERSION" | grep -q "22.1"); then
+    if ([ "$MINOR_VERSION" -eq 2 ] && [ "$PATCH_VERSION" -ge 23 ]) || ([ "$PATCH_VERSION" -eq 22 ] && echo "$ACTIONVIEW_VERSION" | grep -q '\.22\.1$'); then
         echo "✅ SECURE: Version 3.2.22.1 or higher"
         SECURE=true
     else
