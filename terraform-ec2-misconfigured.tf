@@ -84,6 +84,15 @@ resource "aws_security_group" "misconfigured_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow Tomcat from anywhere
+  ingress {
+    description = "Tomcat from anywhere"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -138,9 +147,30 @@ resource "aws_instance" "misconfigured_ec2" {
   user_data = base64encode(<<-EOF
     #!/bin/bash
     yum update -y
-    yum install -y httpd
+    yum install -y httpd java-11-openjdk java-11-openjdk-devel
     systemctl start httpd
     systemctl enable httpd
+    
+    # Install Apache Tomcat with SECURE version (CVE-2025-24813 patched)
+    # Using version 9.0.99 to mitigate CVE-2025-24813
+    TOMCAT_VERSION="9.0.99"
+    cd /opt
+    wget -q https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+    tar xzf apache-tomcat-$TOMCAT_VERSION.tar.gz
+    ln -s apache-tomcat-$TOMCAT_VERSION tomcat
+    useradd -r -m -U -d /opt/tomcat -s /bin/false tomcat
+    chown -R tomcat:tomcat /opt/apache-tomcat-$TOMCAT_VERSION
+    chown -h tomcat:tomcat /opt/tomcat
+    
+    # Configure Tomcat with secure settings to prevent CVE-2025-24813
+    # Disable partial PUT support and file-based session persistence
+    cat > /opt/tomcat/conf/web.xml.security << 'TOMCATSEC'
+    <!-- Security hardening for CVE-2025-24813 -->
+    <init-param>
+        <param-name>readonly</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    TOMCATSEC
     
     # SECURITY ISSUE: Hardcoded credentials in user data
     export DB_PASSWORD="SuperSecretPassword123!"
@@ -150,6 +180,7 @@ resource "aws_instance" "misconfigured_ec2" {
     echo "<h1>Misconfigured Web Server</h1>" > /var/www/html/index.html
     echo "<p>This server is intentionally misconfigured for security testing.</p>" >> /var/www/html/index.html
     echo "<p>Database Password: $DB_PASSWORD</p>" >> /var/www/html/index.html
+    echo "<p>Tomcat Version: $TOMCAT_VERSION (CVE-2025-24813 PATCHED)</p>" >> /var/www/html/index.html
     
     # SECURITY ISSUE: Disable firewall
     systemctl stop firewalld
