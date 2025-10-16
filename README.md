@@ -9,8 +9,15 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 2. **terraform-ec2-misconfigured.tf** - Misconfigured EC2 instance with multiple security vulnerabilities
 
 ### CloudFormation Files
-1. **cloudformation-s3-misconfigured.yaml** - Misconfigured S3 bucket using CloudFormation
-2. **cloudformation-ec2-misconfigured.yaml** - Misconfigured EC2 instance using CloudFormation
+1. **cloudformation-rds-misconfig.yaml** - Misconfigured RDS database using CloudFormation
+2. **cloudformation-sg-misconfig.yaml** - Misconfigured Security Group using CloudFormation
+
+### Ruby on Rails Vulnerability Files
+1. **Gemfile** - Vulnerable Ruby on Rails dependencies (CVE-2016-0752)
+2. **CVE-2016-0752-README.md** - Documentation for the Action View directory traversal vulnerability
+3. **vulnerable_controller_example.rb** - Example of vulnerable and secure controller code
+4. **VULNERABILITY-TESTING.md** - Complete guide for testing and fixing CVE-2016-0752
+5. **check-vulnerability.sh** - Automated script to detect the vulnerability
 
 ## Security Misconfigurations Included
 
@@ -38,12 +45,27 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 - ❌ Sudo access without password requirements
 - ❌ Sensitive information exposed via web interface
 
+### RDS Database Misconfigurations
+- ❌ Publicly accessible database instances
+- ❌ Open security groups (0.0.0.0/0)
+- ❌ No backup retention
+- ❌ Deletion protection disabled
+- ❌ Storage encryption disabled
+- ❌ Public snapshots
+
+### Application Library Vulnerabilities
+- ❌ **CVE-2016-0752**: Directory Traversal in Action View (Rails 4.2.5)
+  - HIGH severity (CVSS 7.5)
+  - Vulnerable Ruby on Rails dependencies in Gemfile
+  - Allows attackers to read arbitrary files via path traversal
+
 ## Usage
 
 ### Prerequisites
 - AWS CLI configured with appropriate credentials
 - Terraform installed (for .tf files)
 - CloudFormation access (for .yaml files)
+- Ruby and Bundler (for testing CVE-2016-0752)
 
 ### Terraform Deployment
 ```bash
@@ -60,21 +82,35 @@ terraform apply -var-file="terraform-ec2-misconfigured.tf"
 
 ### CloudFormation Deployment
 ```bash
-# For S3 misconfigured bucket
+# For RDS misconfigured database
 aws cloudformation create-stack \
-  --stack-name misconfigured-s3-stack \
-  --template-body file://cloudformation-s3-misconfigured.yaml
+  --stack-name misconfigured-rds-stack \
+  --template-body file://cloudformation-rds-misconfig.yaml
 
-# For EC2 misconfigured instance
+# For misconfigured security group
 aws cloudformation create-stack \
-  --stack-name misconfigured-ec2-stack \
-  --template-body file://cloudformation-ec2-misconfigured.yaml \
-  --capabilities CAPABILITY_NAMED_IAM
+  --stack-name misconfigured-sg-stack \
+  --template-body file://cloudformation-sg-misconfig.yaml
+```
+
+### Testing CVE-2016-0752 Vulnerability
+```bash
+# Check for the vulnerability
+./check-vulnerability.sh
+
+# The script will detect the vulnerable Rails 4.2.5 version
+# and provide remediation guidance
+
+# For detailed testing instructions, see:
+# - CVE-2016-0752-README.md
+# - VULNERABILITY-TESTING.md
 ```
 
 ## Security Testing Tools
 
 These misconfigurations can be detected by various security scanning tools:
+
+### Infrastructure Scanning
 - **AWS Config Rules**
 - **AWS Security Hub**
 - **AWS Inspector**
@@ -84,6 +120,13 @@ These misconfigurations can be detected by various security scanning tools:
 - **Checkov**
 - **Terrascan**
 - **tfsec**
+
+### Dependency/Vulnerability Scanning
+- **Bundler Audit** - For Ruby dependencies: `bundle audit`
+- **Snyk** - For dependency vulnerabilities
+- **Dependabot** - GitHub's dependency scanner
+- **OWASP Dependency-Check**
+- **Brakeman** - Rails security scanner
 
 ## ⚠️ Important Warnings
 
