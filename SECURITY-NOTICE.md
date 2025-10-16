@@ -85,7 +85,7 @@ For each vulnerability demonstrated, this repository also provides:
 
 ## Responsible Disclosure
 
-If you discover **unintentional** security issues in this educational repository (i.e., vulnerabilities that were not meant to be there for demonstration purposes), please report them responsibly:
+If you discover **genuine** security issues in this educational repository (i.e., vulnerabilities that were not meant to be there for demonstration purposes), please report them responsibly:
 
 1. Open a GitHub issue with the label "security"
 2. Describe the unintentional vulnerability
