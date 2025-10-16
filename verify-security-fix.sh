@@ -71,7 +71,7 @@ elif [ "$MAJOR_VERSION" -eq 4 ]; then
     fi
 elif [ "$MAJOR_VERSION" -eq 3 ]; then
     # Check if 3.2.22.1 or higher
-    if ([ "$MINOR_VERSION" -eq 2 ] && [ "$PATCH_VERSION" -ge 23 ]) || ([ "$PATCH_VERSION" -eq 22 ] && echo "$ACTIONVIEW_VERSION" | grep -q '\.22\.1$'); then
+    if [ "$MINOR_VERSION" -eq 2 ] && ([ "$PATCH_VERSION" -ge 23 ] || ([ "$PATCH_VERSION" -eq 22 ] && echo "$ACTIONVIEW_VERSION" | grep -q '\.22\.1$')); then
         echo "✅ SECURE: Version 3.2.22.1 or higher"
         SECURE=true
     else
