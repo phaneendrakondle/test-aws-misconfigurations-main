@@ -164,8 +164,9 @@ resource "aws_instance" "misconfigured_ec2" {
     
     # Additional hardening: Explicitly set readonly=true in web.xml for CVE-2025-24813
     # Note: Version 9.0.99 already includes the fix, but this adds defense-in-depth
+    # Insert readonly parameter right after the servlet-class definition for the default servlet
     sed -i '/<servlet-name>default<\/servlet-name>/,/<\/servlet>/ {
-      /<load-on-startup>/i\    <init-param>\n        <param-name>readonly</param-name>\n        <param-value>true</param-value>\n    </init-param>
+      /<servlet-class>org.apache.catalina.servlets.DefaultServlet<\/servlet-class>/a\    <init-param>\n        <param-name>readonly</param-name>\n        <param-value>true</param-value>\n    </init-param>
     }' /opt/tomcat/conf/web.xml
     
     # SECURITY ISSUE: Hardcoded credentials in user data
