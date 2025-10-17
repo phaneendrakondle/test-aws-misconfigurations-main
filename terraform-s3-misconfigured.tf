@@ -30,7 +30,8 @@ resource "random_id" "bucket_suffix" {
 }
 
 # FIXED: Public access block configured to prevent public write access via ACLs
-# Note: block_public_policy is false to allow read-only public policy
+# Note: block_public_policy is false to allow the bucket policy to grant public read access
+# This is intentional - bucket policies provide more granular control than ACLs
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
@@ -41,6 +42,8 @@ resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
 }
 
 # FIXED: Changed from public-read-write to private ACL
+# Using private ACL with bucket policy is the recommended AWS best practice
+# The bucket policy below provides more granular read-only public access control
 resource "aws_s3_bucket_acl" "misconfigured_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
   bucket     = aws_s3_bucket.misconfigured_bucket.id
