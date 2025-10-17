@@ -29,21 +29,22 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# MISCONFIGURATION 1: Public access block disabled (allows public access)
+# FIXED: Public access block configured to prevent public write access via ACLs
+# Note: block_public_policy is false to allow read-only public policy
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
-  block_public_acls       = false
+  block_public_acls       = true
   block_public_policy     = false
-  ignore_public_acls      = false
+  ignore_public_acls      = true
   restrict_public_buckets = false
 }
 
-# MISCONFIGURATION 2: Public read/write ACL
+# FIXED: Changed from public-read-write to private ACL
 resource "aws_s3_bucket_acl" "misconfigured_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
   bucket     = aws_s3_bucket.misconfigured_bucket.id
-  acl        = "public-read-write"
+  acl        = "private"
 }
 
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
@@ -67,7 +68,7 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # MISCONFIGURATION 5: No access logging
 # (Logging is intentionally not configured)
 
-# MISCONFIGURATION 6: Public bucket policy allowing full access
+# FIXED: Removed public write permissions (PutObject, DeleteObject) from bucket policy
 resource "aws_s3_bucket_policy" "misconfigured_policy" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
@@ -75,13 +76,11 @@ resource "aws_s3_bucket_policy" "misconfigured_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "PublicReadWrite"
+        Sid       = "PublicReadOnly"
         Effect    = "Allow"
         Principal = "*"
         Action = [
           "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject",
           "s3:ListBucket"
         ]
         Resource = [
@@ -103,5 +102,5 @@ output "bucket_domain_name" {
 }
 
 output "security_warnings" {
-  value = "WARNING: This bucket is intentionally misconfigured with public access, no encryption, and no versioning!"
+  value = "NOTE: Public write access has been blocked. However, this bucket still has other misconfigurations: public read access, no encryption, and no versioning!"
 }
