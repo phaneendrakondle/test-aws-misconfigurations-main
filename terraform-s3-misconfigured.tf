@@ -34,16 +34,16 @@ resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
   block_public_acls       = true  # Blocks public ACLs
-  block_public_policy     = false # Still allows public read via policy
+  block_public_policy     = false # Allows public read via policy
   ignore_public_acls      = true  # Ignores existing public ACLs
-  restrict_public_buckets = true  # Restricts public bucket policies
+  restrict_public_buckets = false # Allows read-only public bucket policy
 }
 
-# SECURITY FIX: Changed from public-read-write to public-read
+# SECURITY FIX: ACL set to private (access controlled via bucket policy)
 resource "aws_s3_bucket_acl" "misconfigured_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
   bucket     = aws_s3_bucket.misconfigured_bucket.id
-  acl        = "public-read"
+  acl        = "private"
 }
 
 resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
