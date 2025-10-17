@@ -29,7 +29,7 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# FIX: Public access block enabled (blocks public access)
+# SECURITY FIX: Public access block enabled (was intentionally disabled for testing)
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   restrict_public_buckets = true
 }
 
-# FIX: Private ACL (no public access)
+# SECURITY FIX: Private ACL (was public-read-write for testing)
 resource "aws_s3_bucket_acl" "misconfigured_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
   bucket     = aws_s3_bucket.misconfigured_bucket.id
@@ -67,7 +67,7 @@ resource "aws_s3_bucket_versioning" "misconfigured_versioning" {
 # MISCONFIGURATION 5: No access logging
 # (Logging is intentionally not configured)
 
-# FIX: Removed public bucket policy (no public write access allowed)
+# SECURITY FIX: Public bucket policy commented out (was allowing unrestricted write access for testing)
 # resource "aws_s3_bucket_policy" "misconfigured_policy" {
 #   bucket = aws_s3_bucket.misconfigured_bucket.id
 #
