@@ -29,14 +29,14 @@ resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-# FIXED: Public access block configured to prevent public write access while allowing read-only
+# FIXED: Public access block configured to prevent public write access while allowing read-only bucket policies
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
-  block_public_acls       = true
-  block_public_policy     = false
-  ignore_public_acls      = true
-  restrict_public_buckets = false
+  block_public_acls       = true   # Blocks new public ACLs - prevents write access via ACLs
+  block_public_policy     = false  # Allows bucket policies - needed for read-only policy below
+  ignore_public_acls      = true   # Ignores existing public ACLs - prevents write access via ACLs
+  restrict_public_buckets = false  # Allows public bucket policies - needed for read-only policy below
 }
 
 # FIXED: Private ACL to block public write access
