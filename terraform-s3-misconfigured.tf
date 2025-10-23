@@ -15,14 +15,14 @@ provider "aws" {
   region = "us-east-2"
 }
 
-# Misconfigured S3 Bucket with public access
+# S3 Bucket with public write access blocked
 resource "aws_s3_bucket" "misconfigured_bucket" {
   bucket = "my-misconfigured-bucket-${random_id.bucket_suffix.hex}"
 
   tags = {
     Name        = "MisconfiguredBucket"
     Environment = "SecurityTesting"
-    Purpose     = "Intentionally vulnerable for testing"
+    Purpose     = "Security testing with controlled misconfigurations"
   }
 }
 
