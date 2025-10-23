@@ -1,5 +1,7 @@
 # AWS Misconfiguration Test Repository
 
+⚠️ **SECURITY UPDATE (2025-10-23):** Public write access to S3 buckets has been fixed. The S3 bucket configuration now blocks all public write operations (PutObject, DeleteObject) while maintaining read-only access for testing purposes.
+
 This repository contains intentionally misconfigured AWS infrastructure files designed for security testing, penetration testing, and educational purposes. **DO NOT USE THESE CONFIGURATIONS IN PRODUCTION ENVIRONMENTS.**
 
 ## Files Included
@@ -15,12 +17,12 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 ## Security Misconfigurations Included
 
 ### S3 Bucket Misconfigurations
-- ❌ Public access block disabled
-- ❌ Public read/write ACL permissions
+- ✅ **FIXED:** Public write access blocked (public access block enabled, private ACL)
+- ✅ **FIXED:** Bucket policy no longer allows public write operations (PutObject, DeleteObject removed)
+- ⚠️  Public read access still enabled (for testing purposes only)
 - ❌ No server-side encryption
 - ❌ Versioning disabled
 - ❌ No access logging
-- ❌ Public bucket policy allowing full access
 - ❌ No lifecycle policies
 - ❌ No CloudTrail monitoring
 
