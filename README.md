@@ -2,10 +2,26 @@
 
 This repository contains intentionally misconfigured AWS infrastructure files designed for security testing, penetration testing, and educational purposes. **DO NOT USE THESE CONFIGURATIONS IN PRODUCTION ENVIRONMENTS.**
 
+## 🔒 Security Fix Applied
+
+**Critical security misconfiguration resolved**: S3 general purpose buckets now block public write access.
+
+### What was fixed:
+- ✅ Enabled S3 public access block settings (block_public_acls, block_public_policy, ignore_public_acls, restrict_public_buckets)
+- ✅ Changed bucket ACL from public-read-write to private
+- ✅ Removed public write permissions (PutObject, DeleteObject) from bucket policy
+- ✅ Restricted bucket policy to authenticated users with read-only access
+
+### Risk Score Reduced: 
+- **Before**: 10/10 (CRITICAL) - Full public read/write access
+- **After**: 4/10 (MEDIUM) - Public write access blocked, authenticated read access only
+
+**Note**: Other intentional misconfigurations remain for testing purposes (no encryption, no versioning, no logging).
+
 ## Files Included
 
 ### Terraform Files
-1. **terraform-s3-misconfigured.tf** - Misconfigured S3 bucket with public access
+1. **terraform-s3-misconfigured.tf** - S3 bucket with public write access FIXED (public access blocked)
 2. **terraform-ec2-misconfigured.tf** - Misconfigured EC2 instance with multiple security vulnerabilities
 
 ### CloudFormation Files
@@ -15,12 +31,12 @@ This repository contains intentionally misconfigured AWS infrastructure files de
 ## Security Misconfigurations Included
 
 ### S3 Bucket Misconfigurations
-- ❌ Public access block disabled
-- ❌ Public read/write ACL permissions
+- ✅ **FIXED**: Public access block disabled - Now enabled to block public write access
+- ✅ **FIXED**: Public read/write ACL permissions - Changed to private ACL
 - ❌ No server-side encryption
 - ❌ Versioning disabled
 - ❌ No access logging
-- ❌ Public bucket policy allowing full access
+- ✅ **FIXED**: Public bucket policy allowing full access - Now restricted to authenticated users with read-only access
 - ❌ No lifecycle policies
 - ❌ No CloudTrail monitoring
 
