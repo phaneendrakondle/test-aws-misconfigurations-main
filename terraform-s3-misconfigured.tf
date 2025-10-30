@@ -15,7 +15,7 @@ provider "aws" {
   region = "us-east-2"
 }
 
-# Misconfigured S3 Bucket with security fixes applied
+# S3 Bucket with security fixes applied
 resource "aws_s3_bucket" "misconfigured_bucket" {
   bucket = "my-misconfigured-bucket-${random_id.bucket_suffix.hex}"
 
@@ -31,11 +31,13 @@ resource "random_id" "bucket_suffix" {
 }
 
 # SECURITY FIX: Public access block enabled to prevent public write access
+# block_public_acls and restrict_public_buckets prevent public write via ACLs
+# block_public_policy is set to false to allow public read-only bucket policy
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
   block_public_acls       = true
-  block_public_policy     = true
+  block_public_policy     = false
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
