@@ -31,13 +31,17 @@ resource "random_id" "bucket_suffix" {
 }
 
 # SECURITY FIX: Public access block enabled to prevent public write access
-# block_public_acls and restrict_public_buckets prevent public write via ACLs
-# block_public_policy is set to false to allow public read-only bucket policy
+# block_public_acls = true: Prevents new public ACLs from being applied
+# block_public_policy = true: Prevents new public bucket policies from being applied
+# ignore_public_acls = true: Ignores all existing public ACLs
+# restrict_public_buckets = true: Restricts public bucket policies to read-only
+# Note: The existing bucket policy (defined below) allows read-only public access
+# and is restricted by restrict_public_buckets setting to ensure no write access
 resource "aws_s3_bucket_public_access_block" "misconfigured_pab" {
   bucket = aws_s3_bucket.misconfigured_bucket.id
 
   block_public_acls       = true
-  block_public_policy     = false
+  block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
